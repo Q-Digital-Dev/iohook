@@ -25,17 +25,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # Set registry to NPM instead of GitHub packages for publication
           registry-url: 'https://registry.npmjs.org'
           node-version: 16
 
-      # Setup dependencies for macOS, including installation of distutils
+      # Setup dependencies for macOS, including installation of distutils in a virtual environment
       - name: Setup macOS Dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
-          python3 -m ensurepip --upgrade
-          python3 -m pip install distutils
-          pip install --upgrade setuptools
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools
+          pip install distutils
 
       # Setup Linux dependencies
       - name: Setup Linux Dependencies
@@ -57,4 +57,3 @@ jobs:
 
       # Remove steps for building and publishing prebuilds
       # Build and publish steps have been removed as requested
-
