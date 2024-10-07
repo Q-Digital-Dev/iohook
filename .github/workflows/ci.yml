@@ -25,21 +25,26 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # Set registry to NPM instead of github packages for publication
+          # Set registry to NPM instead of GitHub packages for publication
           registry-url: 'https://registry.npmjs.org'
           node-version: 16
 
-      - name: Setup macos Dependencies
+      # Setup dependencies for macOS, including installation of distutils
+      - name: Setup macOS Dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
+          python3 -m ensurepip --upgrade
+          python3 -m pip install distutils
           pip install --upgrade setuptools
 
+      # Setup Linux dependencies
       - name: Setup Linux Dependencies
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
           sudo apt-get install -y software-properties-common libx11-dev libxtst-dev libxt-dev libx11-xcb-dev libxkbcommon-dev libxkbcommon-x11-dev xorg-dev libxcb-xkb-dev libxkbfile-dev libxinerama-dev
 
+      # Install packages without running scripts
       - name: Install Packages
         run: npm i --ignore-scripts
 
@@ -50,16 +55,6 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}
 
-      # Build and publish if version tag is present
-      - name: Build & Publish Prebuilds
-        run: npm run build:ci -- --msvs_version=2019
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          ARCH: ${{ matrix.arch }}
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Remove steps for building and publishing prebuilds
+      # Build and publish steps have been removed as requested
 
-      - name: Publish NPM Package
-        if: startsWith(github.ref, 'refs/tags/v') && startsWith(matrix.os, 'ubuntu')
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
