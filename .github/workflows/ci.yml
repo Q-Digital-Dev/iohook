@@ -28,14 +28,13 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           node-version: 16
 
-      # Setup dependencies for macOS, including installation of distutils in a virtual environment
+      # Setup dependencies for macOS using only setuptools
       - name: Setup macOS Dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
           python3 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip setuptools
-          pip install distutils
 
       # Setup Linux dependencies
       - name: Setup Linux Dependencies
